@@ -6,12 +6,15 @@
 
 class VisionEncoders {
   public:    
-     long currentPossition = 0;
+     long currentPosition = 0;
+     long lastReadPosition = 0;
      int lastState = LOW;
      int stepPin;
   public:
       void init(int pinStep);
-      long getPosition(bool dir);  // dir = 1 - forward |  dir = 0 - backward
+      long getPosition();  
+      void updatePosition(bool dir);  // dir = 1 - forward |  dir = 0 - backward
+      int getTraveledLength();
 };
 
 #endif

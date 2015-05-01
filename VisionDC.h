@@ -2,8 +2,6 @@
   #define VisionDC_h
   
   #include "Arduino.h"
-//  #include <elapsedMillis.h>
-//  #include "VisionState.h"
   
   
   class VisionDC {

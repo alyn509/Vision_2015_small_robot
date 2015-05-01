@@ -9,6 +9,9 @@ void VisionBase::init()
   rightMotor.init(rightMotorFw, rightMotorBw);
   leftMotor.init(leftMotorFw, leftMotorBw);
 
+  leftEncoder.init(leftEncoderStepPin);
+  rightEncoder.init(rightEncoderStepPin);
+  
   servo1.attach(servoPin1);
   servo1.write(0);
   servo2.attach(servoPin2);
@@ -61,15 +64,45 @@ void VisionBase::stopNow()
   leftMotor.stopMotor();
 }
 void VisionBase::doLoop()
-{  
-  moveForward(40,40);
-  //delay(1000);
-  //stopNow();
-  delay(1000);
-  moveBackward(40,40);
-  //delay(1000);
-  //stopNow();
-  delay(1000);
+{
+  
+  switch (state)
+  {
+    case 0:    
+      moveForward(40,40);
+      state.wait(4000, STATE_NEXT);
+      break;
+    case 1:    
+      stopNow();
+      state.wait(1000, 0);
+      break;
+    default:
+      state.doLoop();
+  }
+}
+void VisionBase::update()
+{
+  leftEncoder.updatePosition(leftMotorDir());
+  rightEncoder.updatePosition(rightMotorDir());
+  if(directionMovement == FRONT)
+  {
+    int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
+    if (difference >= 4)
+    {
+      leftMotor.moveForward(10);
+      rightMotor.moveForward(40);
+    }
+    else if(difference <= -4)
+    {
+      leftMotor.moveForward(40);
+      rightMotor.moveForward(10);
+    }
+    else
+    {
+      leftMotor.moveForward(40);
+      rightMotor.moveForward(40);
+    }
+  }
 }
 
 boolean VisionBase::frontDetected()

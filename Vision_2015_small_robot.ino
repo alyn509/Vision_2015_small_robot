@@ -1,18 +1,18 @@
 #include <SoftwareServo.h>
 #include <elapsedMillis.h>
-//#include <Stepper.h>
-//#include <LiquidCrystal.h>
 #include "VisionBase.h"
-//#include "VisionDevices.h"
-//#include "VisionState.h"
-//#include "VisionSensor.h"
+#include "VisionDevices.h"
+#include "VisionState.h"
+#include "VisionSensor.h"
 #include "pins.h"
-//#include "constants.h"
+#include "constants.h"
 
 //#define NINETYSECONDS 39000L
 
 VisionBase base;
-//VisionDevices devices;
+VisionDevices devices;
+VisionState state;
+
 //elapsedMillis timeUpTimer;
 //boolean stoppedEverything = true; 
 
@@ -31,6 +31,17 @@ void setup()
 void loop()
 {
   base.doLoop();
-  SoftwareServo::refresh();
+  
+  switch (state)
+  {  
+    case 0:      
+      base.update();
+      SoftwareServo::refresh();
+      state.waitMicros(1000, 0);
+      break;
+    default:
+      state.doLoop();
+  }
+  
 }
 
