@@ -10,11 +10,11 @@
 #include <elapsedMillis.h>
 #include <Servo.h>
 
-#define NONE 0
-#define FRONT 1
-#define BACK 2
-#define LEFT 3
-#define RIGHT 4
+#define NONE 4
+#define FRONT 3
+#define BACK 0
+#define LEFT 1
+#define RIGHT 2
 
 class VisionBase {
   public:
@@ -28,10 +28,12 @@ class VisionBase {
     void turnLeft();
     void turnRight();
     
+    bool leftMotorDir();
+    bool rightMotorDir();
+    
     void doLoop();
     
-    void stopNow();
-    
+    void stopNow();    
   public:
     Servo servo1;
     Servo servo2;
@@ -40,7 +42,7 @@ class VisionBase {
     VisionDC leftMotor, rightMotor;
     VisionSensor frontLeft, frontMid, frontRight;
     
-    int directionMovement;
+    int directionMovement = NONE;
 };
 
 #endif

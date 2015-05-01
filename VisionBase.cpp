@@ -44,6 +44,15 @@ void VisionBase::turnRight()
   rightMotor.moveBackward();      
   leftMotor.moveForward();
 }
+bool VisionBase::leftMotorDir()
+{
+  return (directionMovement / 2) % 2;
+}
+
+bool VisionBase::rightMotorDir()
+{  
+  return directionMovement % 2;
+}
 
 void VisionBase::stopNow()
 {  

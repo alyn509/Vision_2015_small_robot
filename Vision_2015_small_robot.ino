@@ -5,6 +5,7 @@
 #include "VisionBase.h"
 #include "VisionDevices.h"
 #include "VisionState.h"
+#include "VisionSensor.h"
 #include "pins.h"
 #include "constants.h"
 
@@ -15,14 +16,13 @@ VisionDevices devices;
 elapsedMillis timeUpTimer;
 boolean stoppedEverything = true; 
 
-VisionState state;
+VisionSensor startButton;
 int team_color;
-int tactic;
-float distanceToDo = 0;
 
 void setup()
 { 
-  while(digitalRead(startButtonPin) != 1);
+  startButton.init(startButtonPin);
+  while(!startButton.detect());
   delay(2000);
   base.init();
 }
