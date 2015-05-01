@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include "VisionDC.h"
 #include "VisionSensor.h"
+#include "VisionEncoders.h"
 #include "pins.h"
 #include "constants.h"
 #include <elapsedMillis.h>
@@ -18,25 +19,28 @@
 class VisionBase {
   public:
     void init();
-    Servo sensorScanner;
-    elapsedMillis sensorToggleTimer;
-    void moveForward(float distance, unsigned long step_delay);
-    void moveBackward(float distance, unsigned long step_delay);
+    
+    void moveForward();
+    void moveBackward();
+    
     boolean frontDetected();
-    //boolean leftDetected();
-    //boolean rightDetected();
-    boolean backDetected();
-    void checkObstructions();
-    void turnLeft(int angle);
-    void turnRight(int angle);
+    
+    void turnLeft();
+    void turnRight();
+    
+    void doLoop();
+    
     void stopNow();
+    
   public:
+    Servo servo1;
+    Servo servo2;
+    Servo servo3;
+    
     VisionDC leftMotor, rightMotor;
-    VisionSensor backLeft, backRight, backLow, frontLeft, frontFront, frontRight;
+    VisionSensor frontLeft, frontMid, frontRight;
+    
     int directionMovement;
-    boolean oppositeSide;
-    boolean ignoredSensors;
-    boolean obstructionDetected;
 };
 
 #endif
