@@ -5,7 +5,7 @@
 void VisionEncoders::init(int pinStep) 
 { 
    stepPin = pinStep;
-   pinMode (stepPin,INPUT);
+   pinMode (stepPin,INPUT_PULLUP);
 } 
 
 long VisionEncoders::getPosition() 

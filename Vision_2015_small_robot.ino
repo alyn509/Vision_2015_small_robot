@@ -25,6 +25,7 @@ void setup()
   //startButton.setAsPullup();
   //while(!startButton.detect());
   delay(2000);
+  Serial.begin(115200);
   base.init();
 }
 
@@ -37,7 +38,7 @@ void loop()
     case 0:      
       base.update();
       SoftwareServo::refresh();
-      state.waitMicros(1000, 0);
+      state.waitMicros(10000, 0);
       break;
     default:
       state.doLoop();

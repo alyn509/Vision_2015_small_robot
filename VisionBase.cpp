@@ -69,8 +69,8 @@ void VisionBase::doLoop()
   switch (state)
   {
     case 0:    
-      moveForward(40,40);
-      state.wait(4000, STATE_NEXT);
+      moveForward(60,60);
+      state.wait(20000, 0);
       break;
     case 1:    
       stopNow();
@@ -80,6 +80,7 @@ void VisionBase::doLoop()
       state.doLoop();
   }
 }
+int integral, last;
 void VisionBase::update()
 {
   leftEncoder.updatePosition(leftMotorDir());
@@ -87,21 +88,22 @@ void VisionBase::update()
   if(directionMovement == FRONT)
   {
     int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
-    if (difference >= 1)
-    {
-      leftMotor.moveForward(30);
-      rightMotor.moveForward(40);
-    }
-    else if(difference <= -1)
-    {
-      leftMotor.moveForward(40);
-      rightMotor.moveForward(30);
-    }
-    else
-    {
-      leftMotor.moveForward(40);
-      rightMotor.moveForward(40);
-    }
+    int deriv = difference - last;
+    last = difference;
+    integral += difference;
+    int turn = 2.0 * difference + 0.1 * integral + 10.0 * deriv;
+    if (turn > 30) turn = 30;
+    if (turn < -30) turn = -30;
+    leftMotor.moveForward(60 + turn);
+    rightMotor.moveForward(60 - turn);
+    Serial.print("dif: ");
+    Serial.print(difference);
+    Serial.print(" int: ");
+    Serial.print(integral);
+    Serial.print(" deriv: ");
+    Serial.print(deriv);
+    Serial.print(" turn: ");
+    Serial.println(turn);
   }
 }
 
