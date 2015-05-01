@@ -22,6 +22,7 @@ int team_color;
 void setup()
 { 
   startButton.init(startButtonPin);
+  startButton.setAsPullup();
   while(!startButton.detect());
   delay(2000);
   base.init();
