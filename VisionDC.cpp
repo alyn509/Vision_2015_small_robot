@@ -12,16 +12,16 @@ void VisionDC::init(int fwPin, int bwPin)
   digitalWrite(backwardPin, LOW);
 }
 
-void VisionDC::moveForward()
+void VisionDC::moveForward(unsigned char pwm)
 {
-  digitalWrite(forwardPin, HIGH);  
+  analogWrite(forwardPin, pwm);  
   digitalWrite(backwardPin, LOW);
 }
 
-void VisionDC::moveBackward()
+void VisionDC::moveBackward(unsigned char pwm)
 {
   digitalWrite(forwardPin, LOW);  
-  digitalWrite(backwardPin, HIGH);
+  analogWrite(backwardPin, pwm);
 }
 
 void VisionDC::stopMotor()

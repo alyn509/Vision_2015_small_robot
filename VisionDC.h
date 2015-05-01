@@ -11,8 +11,8 @@
       int forwardPin, backwardPin;
     public:
       void init(int fwPin, int bwPin);
-      void moveForward();
-      void moveBackward();
+      void moveForward(unsigned char pwm);
+      void moveBackward(unsigned char pwm);
       void stopMotor();
   };
   

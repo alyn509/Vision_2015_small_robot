@@ -17,18 +17,18 @@ void VisionBase::init()
   servo3.write(0);
 }
 
-void VisionBase::moveForward()
+void VisionBase::moveForward(unsigned char pwmLeft, unsigned char pwmRight)
 {       
-  directionMovement = FRONT;       
-  rightMotor.moveForward();      
-  leftMotor.moveForward();
+  directionMovement = FRONT;
+  leftMotor.moveForward(pwmLeft);
+  rightMotor.moveForward(pwmRight);
 }
 
-void VisionBase::moveBackward()
+void VisionBase::moveBackward(unsigned char pwmLeft, unsigned char pwmRight)
 {    
-  directionMovement = BACK;   
-  rightMotor.moveBackward();      
-  leftMotor.moveBackward();
+  directionMovement = BACK;
+  leftMotor.moveBackward(pwmLeft);
+  rightMotor.moveBackward(pwmRight);      
 }
 
 void VisionBase::turnLeft()
@@ -62,37 +62,14 @@ void VisionBase::stopNow()
 }
 void VisionBase::doLoop()
 {  
-  int servVal = 0;
-  int fwbw = 0;
-  while(1)
-  {
-    moveForward();
-    servo3.write(servVal);
-    servo3.write(servVal);
-    servo3.write(servVal);
-     if(fwbw == 0)
-       servVal +=5;
-     else
-       servVal -=5;
-     if(servVal >=90)
-       fwbw = 1;
-     if(servVal <5)
-       fwbw = 0;
-     delay(300);
-     moveBackward();
-    servo3.write(servVal);
-    servo3.write(servVal);
-    servo3.write(servVal);
-     if(fwbw == 0)
-       servVal +=5;
-     else
-       servVal -=5;
-     if(servVal >=90)
-       fwbw = 1;
-     if(servVal <5)
-       fwbw = 0;
-     delay(300);
-  }
+  moveForward(40,40);
+  delay(1000);
+  stopNow();
+  delay(1000);
+  moveBackward(40,40);
+  delay(1000);
+  stopNow();
+  delay(1000);
 }
 
 boolean VisionBase::frontDetected()
