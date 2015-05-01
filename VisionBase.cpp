@@ -1,7 +1,14 @@
 #include "VisionBase.h"
+#include <HMC5883L.h>
+
+HMC5883L compass;
 
 void VisionBase::init()
 {
+  Serial.print("hello ");
+  compass = HMC5883L();
+  compass.SetMeasurementMode(Measurement_Continuous);
+  
   frontLeft.initPin(frontLeftSensorPin);
   frontMid.initPin(frontMidSensorPin);
   frontRight.initPin(frontRightSensorPin);
@@ -80,32 +87,33 @@ void VisionBase::doLoop()
       state.doLoop();
   }
 }
-int integral, last;
+
+float integral, last;
 void VisionBase::update()
 {
   leftEncoder.updatePosition(leftMotorDir());
   rightEncoder.updatePosition(rightMotorDir());
-  if (rightEncoder.getPosition() == 100)
+  MagnetometerRaw raw = compass.ReadRawAxis();
+  float heading = atan2(raw.XAxis + 545, raw.YAxis + 545);
+  // Correct for when signs are reversed.
+  if(heading < 0)
+    heading += 2*PI;
+    
+  // Check for wrap due to addition of declination.
+  if(heading > 2*PI)
+    heading -= 2*PI;
+  
+  if(directionMovement == FRONT)
   {
-    leftEncoder.currentPosition = 0;
-    leftMotor.stopMotor();
-  }
-  if (rightEncoder.getPosition() == 100)
-  {
-    rightEncoder.currentPosition = 0;
-    rightMotor.stopMotor();
-  }
-  /*if(directionMovement == FRONT)
-  {
-    int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
-    int deriv = difference - last;
+    float difference = heading - 3.14;//leftEncoder.getPosition() - rightEncoder.getPosition();
+    float deriv = difference - last;
     last = difference;
     integral += difference;
-    int turn = 0.5 * difference + 0.1 * integral + 25.0 * deriv;
+    int turn = 40.0 * difference + 0.0 * integral + 80.0 * deriv;//0.5 * difference + 0.1 * integral + 25.0 * deriv;
     if (turn > 30) turn = 30;
     if (turn < -30) turn = -30;
-    leftMotor.moveForward(80 + turn);
-    rightMotor.moveForward(80 - turn);
+    leftMotor.moveForward(80 - turn);
+    rightMotor.moveForward(80 + turn);
     Serial.print("dif: ");
     Serial.print(difference);
     Serial.print(" int: ");
@@ -114,7 +122,7 @@ void VisionBase::update()
     Serial.print(deriv);
     Serial.print(" turn: ");
     Serial.println(turn);
-  }*/
+  }
 }
 
 boolean VisionBase::frontDetected()

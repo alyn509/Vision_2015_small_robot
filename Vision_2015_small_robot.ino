@@ -6,6 +6,8 @@
 #include "VisionSensor.h"
 #include "pins.h"
 #include "constants.h"
+#include <HMC5883L.h>
+#include <Wire.h>
 
 //#define NINETYSECONDS 39000L
 
