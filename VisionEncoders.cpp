@@ -2,20 +2,18 @@
 #include "pins.h"
 #include <elapsedMillis.h>
 
-void VisionEncoders::init(int pinStep,int pinDirection) 
+void VisionEncoders::init(int pinStep) 
 { 
    stepPin = pinStep;
-   directionPin = pinDirection;
    pinMode (stepPin,INPUT);
-   pinMode (directionPin,INPUT);
 } 
 
-long VisionEncoders::getPossition() 
+long VisionEncoders::getPossition(bool dir) 
 { 
    int currentState = digitalRead(stepPin);
    if ((lastState == LOW) && (currentState == HIGH)) 
    {
-     if (digitalRead(directionPin) == LOW) 
+     if (dir == LOW) 
        currentPossition--;
      else
        currentPossition++;

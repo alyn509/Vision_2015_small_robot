@@ -57,7 +57,7 @@ void VisionBase::doLoop()
   int fwbw = 0;
   while(1)
   {
-     moveForward();
+    moveForward();
     servo3.write(servVal);
     servo3.write(servVal);
     servo3.write(servVal);

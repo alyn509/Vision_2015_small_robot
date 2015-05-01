@@ -22,7 +22,7 @@ float distanceToDo = 0;
 
 void setup()
 { 
-  while(digitalRead(startButtonPin) == 1);
+  while(digitalRead(startButtonPin) != 1);
   delay(2000);
   base.init();
 }

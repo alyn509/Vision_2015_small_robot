@@ -9,10 +9,9 @@ class VisionEncoders {
      long currentPossition = 0;
      int lastState = LOW;
      int stepPin;
-     int directionPin;
   public:
-      void init(int pinStep,int pinDirection);
-      long getPossition();
+      void init(int pinStep);
+      long getPossition(bool dir);  // dir = 1 - forward |  dir = 0 - backward
 };
 
 #endif
