@@ -69,8 +69,8 @@ void VisionBase::doLoop()
   switch (state)
   {
     case 0:    
-      moveForward(60,60);
-      state.wait(20000, 0);
+      moveForward(55,60);
+      state.wait(3000, 0);
       break;
     case 1:    
       stopNow();
@@ -85,17 +85,27 @@ void VisionBase::update()
 {
   leftEncoder.updatePosition(leftMotorDir());
   rightEncoder.updatePosition(rightMotorDir());
-  if(directionMovement == FRONT)
+  if (rightEncoder.getPosition() == 100)
+  {
+    leftEncoder.currentPosition = 0;
+    leftMotor.stopMotor();
+  }
+  if (rightEncoder.getPosition() == 100)
+  {
+    rightEncoder.currentPosition = 0;
+    rightMotor.stopMotor();
+  }
+  /*if(directionMovement == FRONT)
   {
     int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
     int deriv = difference - last;
     last = difference;
     integral += difference;
-    int turn = 2.0 * difference + 0.1 * integral + 10.0 * deriv;
+    int turn = 0.5 * difference + 0.1 * integral + 25.0 * deriv;
     if (turn > 30) turn = 30;
     if (turn < -30) turn = -30;
-    leftMotor.moveForward(60 + turn);
-    rightMotor.moveForward(60 - turn);
+    leftMotor.moveForward(80 + turn);
+    rightMotor.moveForward(80 - turn);
     Serial.print("dif: ");
     Serial.print(difference);
     Serial.print(" int: ");
@@ -104,7 +114,7 @@ void VisionBase::update()
     Serial.print(deriv);
     Serial.print(" turn: ");
     Serial.println(turn);
-  }
+  }*/
 }
 
 boolean VisionBase::frontDetected()
