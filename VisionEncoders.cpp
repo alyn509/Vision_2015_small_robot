@@ -8,7 +8,7 @@ void VisionEncoders::init(int pinStep)
    pinMode (stepPin,INPUT);
 } 
 
-long VisionEncoders::getPossition(bool dir) 
+long VisionEncoders::getPosition(bool dir) 
 { 
    int currentState = digitalRead(stepPin);
    if ((lastState == LOW) && (currentState == HIGH)) 

@@ -8,7 +8,7 @@ void VisionBase::init()
   
   rightMotor.init(rightMotorFw, rightMotorBw);
   leftMotor.init(leftMotorFw, leftMotorBw);
-  
+
   servo1.attach(servoPin1);
   servo1.write(0);
   servo2.attach(servoPin2);
@@ -63,12 +63,12 @@ void VisionBase::stopNow()
 void VisionBase::doLoop()
 {  
   moveForward(40,40);
-  delay(1000);
-  stopNow();
+  //delay(1000);
+  //stopNow();
   delay(1000);
   moveBackward(40,40);
-  delay(1000);
-  stopNow();
+  //delay(1000);
+  //stopNow();
   delay(1000);
 }
 

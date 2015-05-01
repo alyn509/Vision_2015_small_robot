@@ -1,15 +1,15 @@
 #ifndef pins_little_robot_h
 #define pins_little_robot_h
 
-const int frontLeftSensorPin = 11;
+const int frontLeftSensorPin = 14;
 const int frontMidSensorPin = 12;
 const int frontRightSensorPin = 13; //19
 
 const int startButtonPin = 40;
 
-const int leftMotorFw = 5;
+const int leftMotorFw = 3;
 const int rightMotorFw = 9;
-const int leftMotorBw = 6;
+const int leftMotorBw = 11;
 const int rightMotorBw = 10;
 
 const int colorRedPin = 51;

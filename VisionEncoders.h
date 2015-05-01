@@ -11,7 +11,7 @@ class VisionEncoders {
      int stepPin;
   public:
       void init(int pinStep);
-      long getPossition(bool dir);  // dir = 1 - forward |  dir = 0 - backward
+      long getPosition(bool dir);  // dir = 1 - forward |  dir = 0 - backward
 };
 
 #endif

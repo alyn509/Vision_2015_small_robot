@@ -4,11 +4,11 @@
 #include "Arduino.h"
 #include "VisionDC.h"
 #include "VisionSensor.h"
-#include "VisionEncoders.h"
+//#include "VisionEncoders.h"
 #include "pins.h"
-#include "constants.h"
-#include <elapsedMillis.h>
-#include <Servo.h>
+//#include "constants.h"
+//#include <elapsedMillis.h>
+#include <SoftwareServo.h>
 
 #define NONE 4
 #define FRONT 3
@@ -35,9 +35,7 @@ class VisionBase {
     
     void stopNow();    
   public:
-    Servo servo1;
-    Servo servo2;
-    Servo servo3;
+    SoftwareServo servo1, servo2, servo3;
     
     VisionDC leftMotor, rightMotor;
     VisionSensor frontLeft, frontMid, frontRight;
