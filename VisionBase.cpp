@@ -74,7 +74,7 @@ void VisionBase::doLoop()
       break;
     case 1:    
       stopNow();
-      state.wait(1000, 0);
+      state.wait(500, 0);
       break;
     default:
       state.doLoop();
@@ -87,15 +87,15 @@ void VisionBase::update()
   if(directionMovement == FRONT)
   {
     int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
-    if (difference >= 4)
+    if (difference >= 1)
     {
-      leftMotor.moveForward(10);
+      leftMotor.moveForward(30);
       rightMotor.moveForward(40);
     }
-    else if(difference <= -4)
+    else if(difference <= -1)
     {
       leftMotor.moveForward(40);
-      rightMotor.moveForward(10);
+      rightMotor.moveForward(30);
     }
     else
     {
