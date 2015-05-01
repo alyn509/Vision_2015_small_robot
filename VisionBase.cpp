@@ -31,18 +31,18 @@ void VisionBase::moveBackward(unsigned char pwmLeft, unsigned char pwmRight)
   rightMotor.moveBackward(pwmRight);      
 }
 
-void VisionBase::turnLeft()
+void VisionBase::turnLeft(unsigned char pwmLeft, unsigned char pwmRight)
 {
-  directionMovement = LEFT;     
-  rightMotor.moveForward();      
-  leftMotor.moveBackward();
+  directionMovement = LEFT;
+  leftMotor.moveBackward(pwmLeft);
+  rightMotor.moveForward(pwmRight);
 }
 
-void VisionBase::turnRight()
+void VisionBase::turnRight(unsigned char pwmLeft, unsigned char pwmRight)
 {  
-  directionMovement = RIGHT;        
-  rightMotor.moveBackward();      
-  leftMotor.moveForward();
+  directionMovement = RIGHT;
+  leftMotor.moveForward(pwmLeft);
+  rightMotor.moveBackward(pwmRight);
 }
 bool VisionBase::leftMotorDir()
 {

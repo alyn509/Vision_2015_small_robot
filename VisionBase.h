@@ -20,13 +20,13 @@ class VisionBase {
   public:
     void init();
     
-    void moveForward();
-    void moveBackward();
+    void moveForward(unsigned char pwmLeft, unsigned char pwmRight);
+    void moveBackward(unsigned char pwmLeft, unsigned char pwmRight);
     
     boolean frontDetected();
     
-    void turnLeft();
-    void turnRight();
+    void turnLeft(unsigned char pwmLeft, unsigned char pwmRight);
+    void turnRight(unsigned char pwmLeft, unsigned char pwmRight);
     
     bool leftMotorDir();
     bool rightMotorDir();
