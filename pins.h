@@ -7,10 +7,10 @@ const int frontRightSensorPin = 13; //19
 
 const int startButtonPin = 40;
 
-const int leftMotorFw = 3;
-const int rightMotorFw = 9;
-const int leftMotorBw = 11;
-const int rightMotorBw = 10;
+const int leftMotorFw = 11;
+const int rightMotorFw = 10;
+const int leftMotorBw = 3;
+const int rightMotorBw = 9;
 
 const int colorRedPin = 51;
 const int colorYellowPin = 53;
