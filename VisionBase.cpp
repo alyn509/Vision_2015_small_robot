@@ -56,6 +56,25 @@ bool VisionBase::rightMotorDir()
 {  
   return directionMovement % 2;
 }
+void VisionBase::waitForSteps(int steps, int nextState)
+{
+  if(!newMovement)
+  {
+    newMovement = true;
+    lastPosition = (rightEncoder.getPosition() + leftEncoder.getPosition()) / 2;
+  }
+  else
+    if(madeTheseSteps(steps))
+    {
+      newMovement = false;
+      state = nextState;
+    }
+}
+
+bool VisionBase::madeTheseSteps(int steps)
+{
+  return (((rightEncoder.getPosition() + leftEncoder.getPosition()) / 2 - lastPosition) >= steps);
+}
 
 void VisionBase::stopNow()
 {  
@@ -63,6 +82,7 @@ void VisionBase::stopNow()
   rightMotor.stopMotor();      
   leftMotor.stopMotor();
 }
+
 void VisionBase::doLoop()
 {
   
