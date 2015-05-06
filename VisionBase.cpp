@@ -3,7 +3,6 @@
 void VisionBase::init()
 {
   frontLeft.initPin(frontLeftSensorPin);
-  frontMid.initPin(frontMidSensorPin);
   frontRight.initPin(frontRightSensorPin);
   
   rightMotor.init(rightMotorFw, rightMotorBw);
@@ -16,36 +15,46 @@ void VisionBase::init()
   servo1.write(0);
   servo2.attach(servoPin2);
   servo2.write(0);
-  servo3.attach(servoPin3);
-  servo3.write(0);
 }
 
 void VisionBase::moveForward(unsigned char pwmLeft, unsigned char pwmRight)
-{       
-  directionMovement = FRONT;
-  leftMotor.moveForward(pwmLeft);
-  rightMotor.moveForward(pwmRight);
+{  
+  if(!newMovement)
+  {  
+    directionMovement = FRONT;
+    leftMotor.moveForward(pwmLeft);
+    rightMotor.moveForward(pwmRight);
+  }
 }
 
 void VisionBase::moveBackward(unsigned char pwmLeft, unsigned char pwmRight)
 {    
-  directionMovement = BACK;
-  leftMotor.moveBackward(pwmLeft);
-  rightMotor.moveBackward(pwmRight);      
+  if(!newMovement)
+  {  
+    directionMovement = BACK;
+    leftMotor.moveBackward(pwmLeft);
+    rightMotor.moveBackward(pwmRight);  
+  }  
 }
 
 void VisionBase::turnLeft(unsigned char pwmLeft, unsigned char pwmRight)
-{
-  directionMovement = LEFT;
-  leftMotor.moveBackward(pwmLeft);
-  rightMotor.moveForward(pwmRight);
+{  
+  if(!newMovement)
+  {  
+    directionMovement = LEFT;
+    leftMotor.moveBackward(pwmLeft);
+    rightMotor.moveForward(pwmRight);
+  }
 }
 
 void VisionBase::turnRight(unsigned char pwmLeft, unsigned char pwmRight)
-{  
-  directionMovement = RIGHT;
-  leftMotor.moveForward(pwmLeft);
-  rightMotor.moveBackward(pwmRight);
+{    
+  if(!newMovement)
+  {  
+    directionMovement = RIGHT;
+    leftMotor.moveForward(pwmLeft);
+    rightMotor.moveBackward(pwmRight);
+  }
 }
 bool VisionBase::leftMotorDir()
 {
@@ -56,29 +65,61 @@ bool VisionBase::rightMotorDir()
 {  
   return directionMovement % 2;
 }
-void VisionBase::waitForSteps(int steps, int nextState)
+float VisionBase::cmToSteps(int value)
 {
+  return (value * encoderResolution) / (PI * wheelDiameter);
+}
+float VisionBase::angleToSteps(int value)
+{
+  return (value * distanceBetweenWheels * PI) / 360.0;
+}
+void VisionBase::doDistanceInCM(int dist, int nextState)
+{
+  float steps = cmToSteps(dist);
   if(!newMovement)
   {
     newMovement = true;
-    lastPosition = (rightEncoder.getPosition() + leftEncoder.getPosition()) / 2;
+    lastPositionLeft = leftEncoder.getPosition();
+    lastPositionRight = rightEncoder.getPosition();
   }
   else
-    if(madeTheseSteps(steps))
+  {
+    if(leftEncoder.getPosition() - lastPositionLeft >= steps)
+      leftMotor.stopMotor();
+    if(rightEncoder.getPosition() - lastPositionRight >= steps)
+      rightMotor.stopMotor();
+    if(!leftMotor.isOn && !rightMotor.isOn)
     {
       newMovement = false;
       state = nextState;
     }
+  }
 }
-
-bool VisionBase::madeTheseSteps(int steps)
+void VisionBase::doAngleRotation(int dist, int nextState)
 {
-  return (((rightEncoder.getPosition() + leftEncoder.getPosition()) / 2 - lastPosition) >= steps);
+  float steps = angleToSteps(dist);
+  if(!newMovement)
+  {
+    newMovement = true;
+    lastPositionLeft = leftEncoder.getPosition();
+    lastPositionRight = rightEncoder.getPosition();
+  }
+  else
+  {
+    if(leftEncoder.getPosition() - lastPositionLeft >= steps)
+      leftMotor.stopMotor();
+    if(rightEncoder.getPosition() - lastPositionRight >= steps)
+      rightMotor.stopMotor();
+    if(!leftMotor.isOn && !rightMotor.isOn)
+    {
+      newMovement = false;
+      state = nextState;
+    }
+  }
 }
 
 void VisionBase::stopNow()
-{  
-  directionMovement = NONE;        
+{      
   rightMotor.stopMotor();      
   leftMotor.stopMotor();
 }
@@ -89,23 +130,24 @@ void VisionBase::doLoop()
   switch (state)
   {
     case 0:    
-      moveForward(55,60);
-      state.wait(3000, 0);
+      moveForward(20,20);
+      doDistanceInCM(1500,1);
+      //state.wait(3000, 0);
       break;
     case 1:    
       stopNow();
-      state.wait(500, 0);
+      state.wait(500, 1);
       break;
     default:
       state.doLoop();
   }
+  leftEncoder.updatePosition(leftMotorDir());
+  rightEncoder.updatePosition(rightMotorDir());
 }
 int integral, last;
 void VisionBase::update()
 {
-  leftEncoder.updatePosition(leftMotorDir());
-  rightEncoder.updatePosition(rightMotorDir());
-  if (rightEncoder.getPosition() == 100)
+  /*if (rightEncoder.getPosition() == 100)
   {
     leftEncoder.currentPosition = 0;
     leftMotor.stopMotor();
@@ -114,27 +156,35 @@ void VisionBase::update()
   {
     rightEncoder.currentPosition = 0;
     rightMotor.stopMotor();
-  }
-  /*if(directionMovement == FRONT)
+  }*/
+  Serial.print(" L: ");
+  Serial.print(leftEncoder.getPosition());
+  Serial.print(" R: ");
+  Serial.print(rightEncoder.getPosition());
+
+  //if()
   {
     int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
     int deriv = difference - last;
     last = difference;
     integral += difference;
-    int turn = 0.5 * difference + 0.1 * integral + 25.0 * deriv;
-    if (turn > 30) turn = 30;
-    if (turn < -30) turn = -30;
-    leftMotor.moveForward(80 + turn);
-    rightMotor.moveForward(80 - turn);
-    Serial.print("dif: ");
+    int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
+    if (turn > 70) turn = 70;
+    if (turn < -70) turn = -70;
+    if (leftMotor.isOn)
+    leftMotor.moveForward(80 - turn);
+    if (rightMotor.isOn)
+    rightMotor.moveForward(80 + turn);
+
+    Serial.print(" E: ");
     Serial.print(difference);
-    Serial.print(" int: ");
+    Serial.print(" I: ");
     Serial.print(integral);
-    Serial.print(" deriv: ");
+    Serial.print(" D: ");
     Serial.print(deriv);
-    Serial.print(" turn: ");
+    Serial.print(" T: ");
     Serial.println(turn);
-  }*/
+  }
 }
 
 boolean VisionBase::frontDetected()

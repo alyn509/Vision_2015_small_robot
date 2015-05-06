@@ -7,6 +7,7 @@
 #include "VisionState.h"
 #include "VisionEncoders.h"
 #include "pins.h"
+#include "constants.h"
 #include <SoftwareServo.h>
 
 #define NONE 4
@@ -27,12 +28,15 @@ class VisionBase {
     void turnLeft(unsigned char pwmLeft, unsigned char pwmRight);
     void turnRight(unsigned char pwmLeft, unsigned char pwmRight);
     
-    void doDistanceInCM(int steps, int nextState);
+    void doDistanceInCM(int dist, int nextState);
+    void doAngleRotation(int dist, int nextState);
     
     bool leftMotorDir();
-    bool rightMotorDir();
-    bool madeTheseSteps(int steps);
+    bool rightMotorDir();    
     
+    float cmToSteps(int value);
+    float angleToSteps(int value);
+
     void doLoop();
     void update();
     
