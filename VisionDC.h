@@ -7,6 +7,7 @@
   class VisionDC {
     public:
       int forwardPin, backwardPin;
+      bool isOn = false;
     public:
       void init(int fwPin, int bwPin);
       void moveForward(unsigned char pwm);

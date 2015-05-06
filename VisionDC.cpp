@@ -16,17 +16,20 @@ void VisionDC::moveForward(unsigned char pwm)
 {
   analogWrite(forwardPin, pwm);  
   digitalWrite(backwardPin, LOW);
+  isOn = true;
 }
 
 void VisionDC::moveBackward(unsigned char pwm)
 {
   digitalWrite(forwardPin, LOW);  
   analogWrite(backwardPin, pwm);
+  isOn = true;
 }
 
 void VisionDC::stopMotor()
 {
   digitalWrite(forwardPin, LOW);  
   digitalWrite(backwardPin, LOW);
+  isOn = false;
 }
 

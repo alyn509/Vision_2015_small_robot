@@ -1,26 +1,24 @@
 #ifndef pins_little_robot_h
 #define pins_little_robot_h
 
-const int frontLeftSensorPin = 14;
-const int frontMidSensorPin = 12;
-const int frontRightSensorPin = 13; //19
+const int frontLeftSensorPin = A0;
+const int frontRightSensorPin = A1; //19
 
 const int startButtonPin = 40;
 
-const int leftMotorFw = 3;
-const int rightMotorFw = 9;
-const int leftMotorBw = 11;
-const int rightMotorBw = 10;
+const int leftMotorFw = 10;
+const int rightMotorFw = 11;
+const int leftMotorBw = 9;
+const int rightMotorBw = 3;
 
 const int colorRedPin = 51;
 const int colorYellowPin = 53;
 
-const int leftEncoderStepPin = 7;
-const int rightEncoderStepPin = 8;
+const int leftEncoderStepPin = 8;
+const int rightEncoderStepPin = 7;
 
-const int servoPin1 = A0;
-const int servoPin2 = A1;
-const int servoPin3 = A2;
+const int servoPin1 = A4;
+const int servoPin2 = A5;
 
 #endif
 

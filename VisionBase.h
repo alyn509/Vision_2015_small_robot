@@ -27,11 +27,10 @@ class VisionBase {
     void turnLeft(unsigned char pwmLeft, unsigned char pwmRight);
     void turnRight(unsigned char pwmLeft, unsigned char pwmRight);
     
-    void waitForSteps(int steps, int nextState);
+    void doDistanceInCM(int steps, int nextState);
     
     bool leftMotorDir();
     bool rightMotorDir();
-    
     bool madeTheseSteps(int steps);
     
     void doLoop();
@@ -48,7 +47,8 @@ class VisionBase {
     VisionSensor frontLeft, frontMid, frontRight;
     
     int directionMovement = NONE;
-    int lastPosition = 0;
+    float lastPositionLeft = 0;
+    float lastPositionRight = 0;
     
     bool newMovement = false;
 };
