@@ -34,8 +34,8 @@ class VisionBase {
     bool leftMotorDir();
     bool rightMotorDir();    
     
-    float cmToSteps(int value);
-    float angleToSteps(int value);
+    float cmToSteps(float value);
+    float angleToSteps(float value);
 
     void doLoop();
     void update();

@@ -3,6 +3,6 @@
 
 const int encoderResolution = 1500;
 const float wheelDiameter = 9.2;
-const float distanceBetweenWheels = 15.8; //valoare interioara
+const float distanceBetweenWheels = 18.5; //valoare interioara
 
 #endif

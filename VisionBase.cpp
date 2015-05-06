@@ -65,13 +65,13 @@ bool VisionBase::rightMotorDir()
 {  
   return directionMovement % 2;
 }
-float VisionBase::cmToSteps(int value)
+float VisionBase::cmToSteps(float value)
 {
-  return (value * encoderResolution) / (PI * wheelDiameter);
+  return (1.0 * value * encoderResolution) / (PI * wheelDiameter);
 }
-float VisionBase::angleToSteps(int value)
+float VisionBase::angleToSteps(float value)
 {
-  return (value * distanceBetweenWheels * PI) / 360.0;
+  return (1.0 * value * distanceBetweenWheels * PI) / 360.0;
 }
 void VisionBase::doDistanceInCM(int dist, int nextState)
 {
@@ -97,7 +97,7 @@ void VisionBase::doDistanceInCM(int dist, int nextState)
 }
 void VisionBase::doAngleRotation(int dist, int nextState)
 {
-  float steps = angleToSteps(dist);
+  float steps = cmToSteps(angleToSteps(dist));
   if(!newMovement)
   {
     newMovement = true;
@@ -131,60 +131,77 @@ void VisionBase::doLoop()
   {
     case 0:    
       moveForward(20,20);
-      doDistanceInCM(1500,1);
-      //state.wait(3000, 0);
+      doDistanceInCM(80,1);
       break;
     case 1:    
+      turnRight(20,20);
+      doAngleRotation(90,2);
+      break;
+    case 2:    
+      moveForward(20,20);
+      doDistanceInCM(80,3);
+      break;
+    case 3:    
       stopNow();
-      state.wait(500, 1);
       break;
     default:
       state.doLoop();
   }
-  leftEncoder.updatePosition(leftMotorDir());
-  rightEncoder.updatePosition(rightMotorDir());
+  leftEncoder.updatePosition();
+  rightEncoder.updatePosition();
 }
 int integral, last;
 void VisionBase::update()
 {
-  /*if (rightEncoder.getPosition() == 100)
-  {
-    leftEncoder.currentPosition = 0;
-    leftMotor.stopMotor();
-  }
-  if (rightEncoder.getPosition() == 100)
-  {
-    rightEncoder.currentPosition = 0;
-    rightMotor.stopMotor();
-  }*/
   Serial.print(" L: ");
   Serial.print(leftEncoder.getPosition());
   Serial.print(" R: ");
   Serial.print(rightEncoder.getPosition());
 
-  //if()
+  int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
+  int deriv = difference - last;
+  last = difference;
+  integral += difference;
+  int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
+  if (turn > 70) turn = 70;
+  if (turn < -70) turn = -70;
+  if(directionMovement == FRONT)
   {
-    int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
-    int deriv = difference - last;
-    last = difference;
-    integral += difference;
-    int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
-    if (turn > 70) turn = 70;
-    if (turn < -70) turn = -70;
     if (leftMotor.isOn)
-    leftMotor.moveForward(80 - turn);
+      leftMotor.moveForward(80 - turn);
     if (rightMotor.isOn)
-    rightMotor.moveForward(80 + turn);
-
-    Serial.print(" E: ");
-    Serial.print(difference);
-    Serial.print(" I: ");
-    Serial.print(integral);
-    Serial.print(" D: ");
-    Serial.print(deriv);
-    Serial.print(" T: ");
-    Serial.println(turn);
+      rightMotor.moveForward(80 + turn);
   }
+  else if(directionMovement == RIGHT)
+  {      
+    if (leftMotor.isOn)
+      leftMotor.moveForward(80 - turn);
+    if (rightMotor.isOn)
+      rightMotor.moveBackward(80 + turn);
+  }
+  else if(directionMovement == LEFT)
+  {      
+    if (leftMotor.isOn)
+      leftMotor.moveBackward(80 - turn);
+    if (rightMotor.isOn)
+      rightMotor.moveForward(80 + turn);
+  }
+  else if(directionMovement == BACK)
+  {      
+    if (leftMotor.isOn)
+      leftMotor.moveBackward(80 - turn);
+    if (rightMotor.isOn)
+      rightMotor.moveBackward(80 + turn);
+  }
+
+  Serial.print(" E: ");
+  Serial.print(difference);
+  Serial.print(" I: ");
+  Serial.print(integral);
+  Serial.print(" D: ");
+  Serial.print(deriv);
+  Serial.print(" T: ");
+  Serial.println(turn);
 }
 
 boolean VisionBase::frontDetected()
