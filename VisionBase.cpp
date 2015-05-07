@@ -5,55 +5,62 @@ void VisionBase::init()
   frontLeft.initPin(frontLeftSensorPin);
   frontRight.initPin(frontRightSensorPin);
   
-  rightMotor.init(rightMotorFw, rightMotorBw);
-  leftMotor.init(leftMotorFw, leftMotorBw);
-
+  leftMotor.init(leftMotorFw);
+  rightMotor.init(rightMotorFw);
+  
   leftEncoder.init(leftEncoderStepPin);
   rightEncoder.init(rightEncoderStepPin);
-  
-  servo1.attach(servoPin1);
-  servo1.write(0);
-  servo2.attach(servoPin2);
-  servo2.write(0);
+       
+/*  carpetClaw.attach(servoPin2);
+  carpetClaw.write(0);
+  carpetClaw.detach();
+  beaconServo.attach(servoPin1);
+  beaconServo.write(40);
+  beaconServo.detach();*/
 }
 
 void VisionBase::moveForward(unsigned char pwmLeft, unsigned char pwmRight)
 {  
-  if(!newMovement)
+  if(!newMovement || isResuming)
   {  
     directionMovement = FRONT;
     leftMotor.moveForward(pwmLeft);
     rightMotor.moveForward(pwmRight);
+    if(!isResuming)
+    {
+      leftEncoder.resetPosition();
+      rightEncoder.resetPosition();
+    }
+    isResuming = false;
   }
 }
-
-void VisionBase::moveBackward(unsigned char pwmLeft, unsigned char pwmRight)
-{    
-  if(!newMovement)
-  {  
-    directionMovement = BACK;
-    leftMotor.moveBackward(pwmLeft);
-    rightMotor.moveBackward(pwmRight);  
-  }  
-}
-
 void VisionBase::turnLeft(unsigned char pwmLeft, unsigned char pwmRight)
 {  
-  if(!newMovement)
+  if(!newMovement || isResuming)
   {  
     directionMovement = LEFT;
-    leftMotor.moveBackward(pwmLeft);
     rightMotor.moveForward(pwmRight);
+    if(!isResuming)
+    {
+      leftEncoder.resetPosition();
+      rightEncoder.resetPosition();
+    }
+    isResuming = false;
   }
 }
 
 void VisionBase::turnRight(unsigned char pwmLeft, unsigned char pwmRight)
 {    
-  if(!newMovement)
+  if(!newMovement || isResuming)
   {  
     directionMovement = RIGHT;
     leftMotor.moveForward(pwmLeft);
-    rightMotor.moveBackward(pwmRight);
+    if(!isResuming)
+    {
+      leftEncoder.resetPosition();
+      rightEncoder.resetPosition();
+    }
+    isResuming = false;
   }
 }
 bool VisionBase::leftMotorDir()
@@ -88,7 +95,7 @@ void VisionBase::doDistanceInCM(int dist, int nextState)
       leftMotor.stopMotor();
     if(rightEncoder.getPosition() - lastPositionRight >= steps)
       rightMotor.stopMotor();
-    if(!leftMotor.isOn && !rightMotor.isOn)
+    if(!leftMotor.isOn && !rightMotor.isOn && !isPaused)
     {
       newMovement = false;
       state = nextState;
@@ -97,7 +104,7 @@ void VisionBase::doDistanceInCM(int dist, int nextState)
 }
 void VisionBase::doAngleRotation(int dist, int nextState)
 {
-  float steps = cmToSteps(angleToSteps(dist));
+  float steps = cmToSteps(2 * angleToSteps(dist));
   if(!newMovement)
   {
     newMovement = true;
@@ -110,7 +117,7 @@ void VisionBase::doAngleRotation(int dist, int nextState)
       leftMotor.stopMotor();
     if(rightEncoder.getPosition() - lastPositionRight >= steps)
       rightMotor.stopMotor();
-    if(!leftMotor.isOn && !rightMotor.isOn)
+    if(!leftMotor.isOn && !rightMotor.isOn && !isPaused)
     {
       newMovement = false;
       state = nextState;
@@ -121,12 +128,11 @@ void VisionBase::doAngleRotation(int dist, int nextState)
 void VisionBase::stopNow()
 {      
   rightMotor.stopMotor();      
-  leftMotor.stopMotor();
+  leftMotor.stopMotor();  
+  isStopped = true;
 }
-
 void VisionBase::doLoop()
-{
-  
+{  
   switch (state)
   {
     case 0:    
@@ -134,15 +140,22 @@ void VisionBase::doLoop()
       doDistanceInCM(80,1);
       break;
     case 1:    
-      turnRight(20,20);
+      turnRight(80,80);
       doAngleRotation(90,2);
       break;
-    case 2:    
+    case 2:   
       moveForward(20,20);
-      doDistanceInCM(80,3);
+      doDistanceInCM(70,3);
       break;
-    case 3:    
+    case 3:   
+      moveForward(20,20);
+      releaseCarpets();
+      doDistanceInCM(10,4);
+      break;
+    case 4:    
       stopNow();
+      break;
+    case PAUSED:
       break;
     default:
       state.doLoop();
@@ -153,59 +166,60 @@ void VisionBase::doLoop()
 int integral, last;
 void VisionBase::update()
 {
-  Serial.print(" L: ");
+/*  Serial.print(" L: ");
   Serial.print(leftEncoder.getPosition());
   Serial.print(" R: ");
   Serial.print(rightEncoder.getPosition());
-
-  int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
-  int deriv = difference - last;
-  last = difference;
-  integral += difference;
-  int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
-  if (turn > 70) turn = 70;
-  if (turn < -70) turn = -70;
+*/
   if(directionMovement == FRONT)
   {
+    int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
+    int deriv = difference - last;
+    last = difference;
+    integral += difference;
+    int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
+    if (turn > 70) turn = 70;
+    if (turn < -70) turn = -70;
     if (leftMotor.isOn)
       leftMotor.moveForward(80 - turn);
     if (rightMotor.isOn)
       rightMotor.moveForward(80 + turn);
+/*    Serial.print(" E: ");
+    Serial.print(difference);
+    Serial.print(" I: ");
+    Serial.print(integral);
+    Serial.print(" D: ");
+    Serial.print(deriv);
+    Serial.print(" T: ");
+    Serial.println(turn);*/
   }
-  else if(directionMovement == RIGHT)
-  {      
-    if (leftMotor.isOn)
-      leftMotor.moveForward(80 - turn);
-    if (rightMotor.isOn)
-      rightMotor.moveBackward(80 + turn);
-  }
-  else if(directionMovement == LEFT)
-  {      
-    if (leftMotor.isOn)
-      leftMotor.moveBackward(80 - turn);
-    if (rightMotor.isOn)
-      rightMotor.moveForward(80 + turn);
-  }
-  else if(directionMovement == BACK)
-  {      
-    if (leftMotor.isOn)
-      leftMotor.moveBackward(80 - turn);
-    if (rightMotor.isOn)
-      rightMotor.moveBackward(80 + turn);
-  }
-
-  Serial.print(" E: ");
-  Serial.print(difference);
-  Serial.print(" I: ");
-  Serial.print(integral);
-  Serial.print(" D: ");
-  Serial.print(deriv);
-  Serial.print(" T: ");
-  Serial.println(turn);
 }
 
-boolean VisionBase::frontDetected()
+boolean VisionBase::sensorDetection()
 {
   return frontLeft.detect() || frontRight.detect();
 }
 
+void VisionBase::pause()
+{ 
+  isPaused = true;
+  stateBeforePause = state;
+  state = PAUSED;
+  rightMotor.stopMotor();      
+  leftMotor.stopMotor(); 
+}
+void VisionBase::unpause()
+{
+  state = stateBeforePause;
+  isPaused = false;
+  isResuming = true;
+}
+
+void VisionBase::releaseCarpets()
+{
+  if(!carpetClaw.attached())
+  {
+    carpetClaw.attach(servoPin2);
+    carpetClaw.write(60);
+  }
+}
