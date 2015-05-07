@@ -12,6 +12,7 @@ void VisionBase::init()
   rightEncoder.init(rightEncoderStepPin);
   
   side = digitalRead(colorRedPin);
+  state = YELLOW_SIDE;
 }
 
 void VisionBase::moveForward(int pwmv)
@@ -133,12 +134,13 @@ void VisionBase::doLoop()
 {  
   switch (state)
   {
+/************************************** YELLOW SIDE**************************************/      
     case 0:    
       moveForward(80);
       doDistanceInCM(80,1);
       break;
     case 1:    
-      turnRight(80);
+      turnLeft(80);
       doAngleRotation(90,2);
       break;
     case 2:   
@@ -150,13 +152,13 @@ void VisionBase::doLoop()
       releaseCarpets();
       doDistanceInCM(15,OVER);
       break;
-/************************************** OTHER SIDE **************************************/      
+/************************************** GREEN SIDE**************************************/      
     case 100:    
       moveForward(80);
       doDistanceInCM(80,101);
       break;
     case 101:    
-      turnLeft(80);
+      turnRight(80);
       doAngleRotation(90,102);
       break;
     case 102:   

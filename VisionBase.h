@@ -19,7 +19,8 @@
 #define PAUSED 500
 #define OVER 501
 #define HOMOLOGATION 400
-#define OTHER_SIDE 100
+#define YELLOW_SIDE 0
+#define GREEN_SIDE 100
 
 class VisionBase {
   public:
