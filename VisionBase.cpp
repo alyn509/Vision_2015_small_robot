@@ -10,57 +10,53 @@ void VisionBase::init()
   
   leftEncoder.init(leftEncoderStepPin);
   rightEncoder.init(rightEncoderStepPin);
-       
-/*  carpetClaw.attach(servoPin2);
-  carpetClaw.write(0);
-  carpetClaw.detach();
-  beaconServo.attach(servoPin1);
-  beaconServo.write(40);
-  beaconServo.detach();*/
 }
 
-void VisionBase::moveForward(unsigned char pwmLeft, unsigned char pwmRight)
+void VisionBase::moveForward(int pwmv)
 {  
   if(!newMovement || isResuming)
   {  
     directionMovement = FRONT;
-    leftMotor.moveForward(pwmLeft);
-    rightMotor.moveForward(pwmRight);
+    leftMotor.moveForward(pwmv);
+    rightMotor.moveForward(pwmv);
     if(!isResuming)
     {
       leftEncoder.resetPosition();
       rightEncoder.resetPosition();
     }
     isResuming = false;
+    pwmValue = pwmv;
   }
 }
-void VisionBase::turnLeft(unsigned char pwmLeft, unsigned char pwmRight)
+void VisionBase::turnLeft(int pwmv)
 {  
   if(!newMovement || isResuming)
   {  
     directionMovement = LEFT;
-    rightMotor.moveForward(pwmRight);
+    rightMotor.moveForward(pwmv);
     if(!isResuming)
     {
       leftEncoder.resetPosition();
       rightEncoder.resetPosition();
     }
     isResuming = false;
+    pwmValue = pwmv;
   }
 }
 
-void VisionBase::turnRight(unsigned char pwmLeft, unsigned char pwmRight)
+void VisionBase::turnRight(int pwmv)
 {    
   if(!newMovement || isResuming)
   {  
     directionMovement = RIGHT;
-    leftMotor.moveForward(pwmLeft);
+    leftMotor.moveForward(pwmv);
     if(!isResuming)
     {
       leftEncoder.resetPosition();
       rightEncoder.resetPosition();
     }
     isResuming = false;
+    pwmValue = pwmv;
   }
 }
 bool VisionBase::leftMotorDir()
@@ -136,19 +132,19 @@ void VisionBase::doLoop()
   switch (state)
   {
     case 0:    
-      moveForward(20,20);
+      moveForward(80);
       doDistanceInCM(80,1);
       break;
     case 1:    
-      turnRight(80,80);
+      turnRight(80);
       doAngleRotation(90,2);
       break;
     case 2:   
-      moveForward(20,20);
+      moveForward(80);
       doDistanceInCM(70,3);
       break;
     case 3:   
-      moveForward(20,20);
+      moveForward(80);
       releaseCarpets();
       doDistanceInCM(10,4);
       break;
@@ -173,17 +169,18 @@ void VisionBase::update()
 */
   if(directionMovement == FRONT)
   {
+    int threshold = pwmValue - 10;
     int difference = leftEncoder.getPosition() - rightEncoder.getPosition();
     int deriv = difference - last;
     last = difference;
     integral += difference;
     int turn = 2.0 * difference + 0.0 * integral + 0.0 * deriv;
-    if (turn > 70) turn = 70;
-    if (turn < -70) turn = -70;
+    if (turn > threshold) turn = threshold;
+    if (turn < -threshold) turn = -threshold;
     if (leftMotor.isOn)
-      leftMotor.moveForward(80 - turn);
+      leftMotor.moveForward(pwmValue - turn);
     if (rightMotor.isOn)
-      rightMotor.moveForward(80 + turn);
+      rightMotor.moveForward(pwmValue + turn);
 /*    Serial.print(" E: ");
     Serial.print(difference);
     Serial.print(" I: ");
@@ -222,4 +219,11 @@ void VisionBase::releaseCarpets()
     carpetClaw.attach(servoPin2);
     carpetClaw.write(60);
   }
+}
+
+void VisionBase::moveBeacon(int value)
+{
+  if(!beaconServo.attached())
+    beaconServo.attach(servoPin1);
+  beaconServo.write(value);
 }

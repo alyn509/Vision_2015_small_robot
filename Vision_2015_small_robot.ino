@@ -17,15 +17,15 @@ VisionState state;
 elapsedMillis timeUpTimer, enemyTimer;
 boolean stoppedEverything; 
 
-//VisionSensor startButton;
+VisionSensor startButton;
 //int team_color;
 
 void setup()
 { 
-  //startButton.initPin(startButtonPin);
-  //startButton.setAsPullup();
-  //while(!startButton.detect());
-  delay(2000);
+  startButton.initPin(startButtonPin);
+  startButton.setAsPullup();
+  while(!startButton.detect());
+  
   stoppedEverything = false;
   Serial.begin(115200);
   base.init();

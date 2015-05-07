@@ -22,12 +22,12 @@ class VisionBase {
   public:
     void init();
     
-    void moveForward(unsigned char pwmLeft, unsigned char pwmRight);
+    void moveForward(int pwmv);
     
     boolean sensorDetection();
     
-    void turnLeft(unsigned char pwmLeft, unsigned char pwmRight);
-    void turnRight(unsigned char pwmLeft, unsigned char pwmRight);
+    void turnLeft(int pwmv);
+    void turnRight(int pwmv);
     
     void doDistanceInCM(int dist, int nextState);
     void doAngleRotation(int dist, int nextState);
@@ -45,6 +45,7 @@ class VisionBase {
     void unpause();
     
     void releaseCarpets();
+    void moveBeacon(int value);
         
     void stopNow();    
   public:
@@ -56,6 +57,7 @@ class VisionBase {
     VisionDC leftMotor, rightMotor;
     VisionSensor frontLeft, frontRight;
     
+    int pwmValue = 0;
     int directionMovement = NONE;
     int stateBeforePause;
     float lastPositionLeft = 0;
