@@ -8,7 +8,7 @@
 #include "VisionEncoders.h"
 #include "pins.h"
 #include "constants.h"
-#include <SoftwareServo.h>
+#include <Servo.h>
 
 #define NONE 4
 #define FRONT 3
@@ -16,14 +16,15 @@
 #define LEFT 1
 #define RIGHT 2
 
+#define PAUSED 500
+
 class VisionBase {
   public:
     void init();
     
     void moveForward(unsigned char pwmLeft, unsigned char pwmRight);
-    void moveBackward(unsigned char pwmLeft, unsigned char pwmRight);
     
-    boolean frontDetected();
+    boolean sensorDetection();
     
     void turnLeft(unsigned char pwmLeft, unsigned char pwmRight);
     void turnRight(unsigned char pwmLeft, unsigned char pwmRight);
@@ -40,20 +41,30 @@ class VisionBase {
     void doLoop();
     void update();
     
+    void pause();
+    void unpause();
+    
+    void releaseCarpets();
+        
     void stopNow();    
   public:
-    SoftwareServo servo1, servo2, servo3;
+    Servo beaconServo, carpetClaw;
     
     VisionEncoders leftEncoder, rightEncoder;
     VisionState state;
     
     VisionDC leftMotor, rightMotor;
-    VisionSensor frontLeft, frontMid, frontRight;
+    VisionSensor frontLeft, frontRight;
     
     int directionMovement = NONE;
+    int stateBeforePause;
     float lastPositionLeft = 0;
     float lastPositionRight = 0;
     
+    bool isPaused = false;
+    bool isResuming = false;
+    bool isStopped = false;
+    bool ignoredSensors = false;
     bool newMovement = false;
 };
 

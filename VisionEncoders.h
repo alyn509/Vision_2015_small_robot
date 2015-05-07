@@ -12,6 +12,7 @@ class VisionEncoders {
      int stepPin;
   public:
       void init(int pinStep);
+      void resetPosition();
       long getPosition();  
       void updatePosition();  // dir = 1 - forward |  dir = 0 - backward
       int getTraveledLength();

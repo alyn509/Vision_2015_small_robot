@@ -13,6 +13,11 @@ long VisionEncoders::getPosition()
    return currentPosition;
 } 
 
+void VisionEncoders::resetPosition() 
+{ 
+   currentPosition = 0;
+} 
+
 void VisionEncoders::updatePosition() 
 { 
    int currentState = digitalRead(stepPin);
