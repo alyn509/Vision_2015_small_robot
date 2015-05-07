@@ -10,6 +10,8 @@ void VisionBase::init()
   
   leftEncoder.init(leftEncoderStepPin);
   rightEncoder.init(rightEncoderStepPin);
+  
+  side = digitalRead(colorRedPin);
 }
 
 void VisionBase::moveForward(int pwmv)
@@ -141,17 +143,46 @@ void VisionBase::doLoop()
       break;
     case 2:   
       moveForward(80);
-      doDistanceInCM(70,3);
+      doDistanceInCM(65,3);
       break;
     case 3:   
       moveForward(80);
       releaseCarpets();
-      doDistanceInCM(10,4);
+      doDistanceInCM(15,OVER);
       break;
-    case 4:    
-      stopNow();
+/************************************** OTHER SIDE **************************************/      
+    case 100:    
+      moveForward(80);
+      doDistanceInCM(80,101);
       break;
+    case 101:    
+      turnLeft(80);
+      doAngleRotation(90,102);
+      break;
+    case 102:   
+      moveForward(80);
+      doDistanceInCM(65,103);
+      break;
+    case 103:   
+      moveForward(80);
+      releaseCarpets();
+      doDistanceInCM(15,OVER);
+      break;
+/************************************ HOMOLOGATION **************************************/      
+      
+    case HOMOLOGATION:    
+      moveForward(80);
+      doDistanceInCM(30,HOMOLOGATION + 1);
+      break;
+    case HOMOLOGATION + 1:    
+      turnRight(80);
+      doAngleRotation(90,HOMOLOGATION);
+      break;
+      
     case PAUSED:
+      break;
+    case OVER:    
+      stopNow();
       break;
     default:
       state.doLoop();
@@ -225,5 +256,9 @@ void VisionBase::moveBeacon(int value)
 {
   if(!beaconServo.attached())
     beaconServo.attach(servoPin1);
-  beaconServo.write(value);
+  if(value != lastBeaconServoValue)
+  {
+    beaconServo.write(value);
+    lastBeaconServoValue = value;
+  }
 }

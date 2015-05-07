@@ -17,6 +17,9 @@
 #define RIGHT 2
 
 #define PAUSED 500
+#define OVER 501
+#define HOMOLOGATION 400
+#define OTHER_SIDE 100
 
 class VisionBase {
   public:
@@ -62,7 +65,9 @@ class VisionBase {
     int stateBeforePause;
     float lastPositionLeft = 0;
     float lastPositionRight = 0;
+    int lastBeaconServoValue = 0;
     
+    bool side = false;
     bool isPaused = false;
     bool isResuming = false;
     bool isStopped = false;

@@ -1,7 +1,6 @@
 #include <Servo.h>
 #include <elapsedMillis.h>
 #include "VisionBase.h"
-#include "VisionDevices.h"
 #include "VisionState.h"
 #include "VisionSensor.h"
 #include "pins.h"
@@ -11,21 +10,20 @@
 #define NINETYSECONDS 89000L
 
 VisionBase base;
-VisionDevices devices;
 VisionState state;
 
 elapsedMillis timeUpTimer, enemyTimer;
 boolean stoppedEverything; 
 
 VisionSensor startButton;
-//int team_color;
 
 void setup()
 { 
   startButton.initPin(startButtonPin);
   startButton.setAsPullup();
-  while(!startButton.detect());
-  
+//  while(!startButton.detect());
+  delay(2000);
+  timeUpTimer = 0;
   stoppedEverything = false;
   Serial.begin(115200);
   base.init();
@@ -52,7 +50,7 @@ void loop()
 
 void testIfTimeUp()
 {
-  if(timeUpTimer == NINETYSECONDS)
+  if(timeUpTimer >= NINETYSECONDS)
     timeIsUpStopEverything();  
 }
 
