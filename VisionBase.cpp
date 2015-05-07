@@ -12,7 +12,7 @@ void VisionBase::init()
   rightEncoder.init(rightEncoderStepPin);
   
   side = digitalRead(colorRedPin);
-  state = GREEN_SIDE;
+  state = YELLOW_SIDE;
 }
 
 void VisionBase::moveForward(int pwmv)
@@ -137,10 +137,12 @@ void VisionBase::doLoop()
 /************************************** YELLOW SIDE**************************************/      
     case 0:    
       moveForward(100);
+      moveBeacon(25);
       doDistanceInCM(75,1);
       break;
     case 1:    
       turnLeft(100);
+      moveBeacon(100);
       doAngleRotation(90,2);
       break;
     case 2:   
@@ -249,7 +251,7 @@ void VisionBase::releaseCarpets()
 {
   if(!carpetClaw.attached())
   {
-    carpetClaw.attach(servoPin2);
+    carpetClaw.attach(carpetClawPin);
     carpetClaw.write(60);
   }
 }
@@ -257,7 +259,7 @@ void VisionBase::releaseCarpets()
 void VisionBase::moveBeacon(int value)
 {
   if(!beaconServo.attached())
-    beaconServo.attach(servoPin1);
+    beaconServo.attach(beaconServoPin);
   if(value != lastBeaconServoValue)
   {
     beaconServo.write(value);

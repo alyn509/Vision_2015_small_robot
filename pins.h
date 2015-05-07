@@ -17,8 +17,8 @@ const int colorYellowPin = 53;
 const int leftEncoderStepPin = 8;
 const int rightEncoderStepPin = 7;
 
-const int servoPin1 = 10;
-const int servoPin2 = 9;
+const int beaconServoPin = 10;
+const int carpetClawPin = 9;
 
 #endif
 
