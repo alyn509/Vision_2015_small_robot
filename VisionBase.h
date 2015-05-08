@@ -9,6 +9,7 @@
 #include "pins.h"
 #include "constants.h"
 #include <Servo.h>
+#include <elapsedMillis.h>
 
 #define NONE 4
 #define FRONT 3
@@ -47,6 +48,8 @@ class VisionBase {
     
     void pause();
     void unpause();
+    
+    void lowerBeacon();
     
     void releaseCarpets();
     void moveBeacon(int value);

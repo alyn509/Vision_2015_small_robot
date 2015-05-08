@@ -1,8 +1,8 @@
 #ifndef pins_little_robot_h
 #define pins_little_robot_h
 
-const int frontLeftSensorPin = A0;
-const int frontRightSensorPin = A1; //19
+const int frontLeftSensorPin = 13;
+const int frontRightSensorPin = A1;
 
 const int startButtonPin = 40;
 

@@ -11,8 +11,9 @@ void VisionBase::init()
   leftEncoder.init(leftEncoderStepPin);
   rightEncoder.init(rightEncoderStepPin);
   
+  moveBeacon(90);
   side = digitalRead(colorRedPin);
-  state = YELLOW_SIDE;
+  state = 2;
 }
 
 void VisionBase::moveForward(int pwmv)
@@ -136,27 +137,30 @@ void VisionBase::doLoop()
   {
 /************************************** YELLOW SIDE**************************************/      
     case 0:    
-      moveForward(100);
-      moveBeacon(25);
+      moveForward(50);
       doDistanceInCM(75,1);
       break;
     case 1:    
-      turnLeft(100);
-      moveBeacon(100);
+      turnLeft(80);
       doAngleRotation(90,2);
       break;
     case 2:   
-      moveForward(80);
-      doDistanceInCM(60,3);
+      moveForward(30);
+      doDistanceInCM(20,3);
       break;
     case 3:   
-      moveForward(80);
-      releaseCarpets();
+      moveForward(60);
+      lowerBeacon();
+      doDistanceInCM(40,4);
+      break;
+    case 4:   
+      moveForward(60);
+      //releaseCarpets();
       doDistanceInCM(15,OVER);
       break;
 /************************************** GREEN SIDE**************************************/      
     case 100:    
-      moveForward(80);
+      moveForward(50);
       doDistanceInCM(75,101);
       break;
     case 101:    
@@ -164,11 +168,16 @@ void VisionBase::doLoop()
       doAngleRotation(90,102);
       break;
     case 102:   
-      moveForward(80);
-      doDistanceInCM(60,103);
+      moveForward(30);
+      doDistanceInCM(20,103);
       break;
     case 103:   
-      moveForward(80);
+      moveForward(30);
+      lowerBeacon();
+      doDistanceInCM(40,104);
+      break;
+    case 104:   
+      moveForward(30);
       releaseCarpets();
       doDistanceInCM(15,OVER);
       break;
@@ -194,6 +203,23 @@ void VisionBase::doLoop()
   leftEncoder.updatePosition();
   rightEncoder.updatePosition();
 }
+
+int currentBeaconPos = 0;
+elapsedMillis beaconTimer;
+void VisionBase::lowerBeacon()
+{
+  if(currentBeaconPos == 0)
+    beaconTimer = 0;
+  if(beaconTimer % 55 == 0 && currentBeaconPos <= 90)
+  {
+    currentBeaconPos++;
+    moveBeacon(90 - currentBeaconPos);
+    Serial.print(" pos: ");
+    Serial.println(currentBeaconPos);
+  }
+  
+}
+
 int integral, last;
 void VisionBase::update()
 {
