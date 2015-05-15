@@ -21,8 +21,8 @@ void setup()
 { 
   startButton.initPin(startButtonPin);
   startButton.setAsPullup();
-//  while(!startButton.detect());
-  delay(2000);
+  while(startButton.detect());
+  delay(50);
   timeUpTimer = 0;
   stoppedEverything = false;
   Serial.begin(115200);

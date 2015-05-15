@@ -2,6 +2,9 @@
 
 void VisionBase::init()
 {
+  color.initPin(colorPin);
+  color.setAsPullup();
+  
   frontLeft.initPin(frontLeftSensorPin);
   frontRight.initPin(frontRightSensorPin);
   
@@ -11,9 +14,12 @@ void VisionBase::init()
   leftEncoder.init(leftEncoderStepPin);
   rightEncoder.init(rightEncoderStepPin);
   
-  moveBeacon(90);
-  side = digitalRead(colorRedPin);
-  state = 2;
+  moveBeacon(95);
+  /*
+  if(color.detect())
+    state = YELLOW_SIDE;
+  else*/
+    state = YELLOW_SIDE;
 }
 
 void VisionBase::moveForward(int pwmv)
@@ -142,21 +148,7 @@ void VisionBase::doLoop()
       break;
     case 1:    
       turnLeft(80);
-      doAngleRotation(90,2);
-      break;
-    case 2:   
-      moveForward(30);
-      doDistanceInCM(20,3);
-      break;
-    case 3:   
-      moveForward(60);
-      lowerBeacon();
-      doDistanceInCM(40,4);
-      break;
-    case 4:   
-      moveForward(60);
-      //releaseCarpets();
-      doDistanceInCM(15,OVER);
+      doAngleRotation(88,CLIMB_STAIRS);
       break;
 /************************************** GREEN SIDE**************************************/      
     case 100:    
@@ -165,19 +157,28 @@ void VisionBase::doLoop()
       break;
     case 101:    
       turnRight(80);
-      doAngleRotation(90,102);
+      doAngleRotation(92,CLIMB_STAIRS);
       break;
-    case 102:   
-      moveForward(30);
-      doDistanceInCM(20,103);
+      
+/************************************** CLIMB STAIRS**************************************/      
+    case CLIMB_STAIRS:   
+      moveForward(50);
+      //lowerBeacon();
+      doDistanceInCM(20,51);
       break;
-    case 103:   
-      moveForward(30);
+    case 51:   
+      moveForward(75);
       lowerBeacon();
-      doDistanceInCM(40,104);
+      doDistanceInCM(36,52);
       break;
-    case 104:   
-      moveForward(30);
+    case 52:   
+      moveForward(70);
+      lowerBeacon();
+      doDistanceInCM(10,53);
+      break;
+    case 53:   
+      moveForward(40);
+      resumeBeacon();
       releaseCarpets();
       doDistanceInCM(15,OVER);
       break;
@@ -190,11 +191,11 @@ void VisionBase::doLoop()
     case HOMOLOGATION + 1:    
       turnRight(80);
       doAngleRotation(90,HOMOLOGATION);
-      break;
-      
+      break;      
     case PAUSED:
       break;
-    case OVER:    
+    case OVER: 
+      moveBeacon(95);   
       stopNow();
       break;
     default:
@@ -205,19 +206,28 @@ void VisionBase::doLoop()
 }
 
 int currentBeaconPos = 0;
+int threshold = 75;
 elapsedMillis beaconTimer;
 void VisionBase::lowerBeacon()
 {
   if(currentBeaconPos == 0)
     beaconTimer = 0;
-  if(beaconTimer % 55 == 0 && currentBeaconPos <= 90)
+  if(beaconTimer % 55 == 0 && currentBeaconPos < threshold)
   {
     currentBeaconPos++;
-    moveBeacon(90 - currentBeaconPos);
-    Serial.print(" pos: ");
-    Serial.println(currentBeaconPos);
+    moveBeacon(95 - currentBeaconPos);
   }
   
+}
+void VisionBase::resumeBeacon()
+{
+  if(currentBeaconPos == threshold)
+    beaconTimer = 0;
+  if(beaconTimer % 30 == 0 && currentBeaconPos > 0)
+  {
+    currentBeaconPos--;
+    moveBeacon(95 - currentBeaconPos);
+  }  
 }
 
 int integral, last;

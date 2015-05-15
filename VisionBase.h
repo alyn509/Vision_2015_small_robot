@@ -23,6 +23,7 @@
 #define YELLOW_SIDE 0
 #define GREEN_SIDE 100
 
+#define CLIMB_STAIRS 50
 class VisionBase {
   public:
     void init();
@@ -50,6 +51,7 @@ class VisionBase {
     void unpause();
     
     void lowerBeacon();
+    void resumeBeacon();
     
     void releaseCarpets();
     void moveBeacon(int value);
@@ -63,6 +65,7 @@ class VisionBase {
     
     VisionDC leftMotor, rightMotor;
     VisionSensor frontLeft, frontRight;
+    VisionSensor color;
     
     int pwmValue = 0;
     int directionMovement = NONE;
@@ -71,7 +74,6 @@ class VisionBase {
     float lastPositionRight = 0;
     int lastBeaconServoValue = 0;
     
-    bool side = false;
     bool isPaused = false;
     bool isResuming = false;
     bool isStopped = false;
