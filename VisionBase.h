@@ -54,13 +54,12 @@ class VisionBase {
     void resumeBeacon();
     
     void releaseCarpets();
-    void moveBeacon(int value);
-        
-    void stopNow();    
+
+    void stopNow();
   public:
     Servo beaconServo, carpetClaw;
     
-    VisionEncoders leftEncoder, rightEncoder;
+    //VisionEncoders leftEncoder, rightEncoder;
     VisionState state;
     
     VisionDC leftMotor, rightMotor;
@@ -69,7 +68,7 @@ class VisionBase {
     
     int pwmValue = 0;
     int directionMovement = NONE;
-    int stateBeforePause;
+    int stateBeforePause, side;
     float lastPositionLeft = 0;
     float lastPositionRight = 0;
     int lastBeaconServoValue = 0;
